@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="UTF-8">
+    <title>Map</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let clickCounter = 0;
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const socket = io('http://localhost:8080');
+            const mapImage = document.getElementById('mapImage');
+            const cursor = document.getElementById('cursor');
+            const emitButton = document.getElementById('emitButton');
+            const emergencyButton = document.getElementById('emergencyButton');
+            const lidarButton = document.getElementById('lidarButton');
+            const manualButton = document.getElementById('manualButton');
+            
+            
+            mapImage.addEventListener('mousemove', (event) => {
+                const rect = mapImage.getBoundingClientRect();
+                // console.log(rect);
+                const x = event.clientX;
+                const y = event.clientY;
+                cursor.style.left = x + 'px';
+                cursor.style.top = y + 'px';
+            });
+
+            mapImage.addEventListener('click', (event) => {
+                const rect = mapImage.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+
+                let pointMarker = document.querySelector('.point-marker');
+
+                // console.log(pointMarker);
+
+                if(!pointMarker) {
+                    pointMarker = document.createElement('div');
+                    pointMarker.classList.add('point-marker');
+                    document.querySelector('.map-container').appendChild(pointMarker);
+                }
+                
+                pointMarker.style.left = x + rect.left + "px";
+                pointMarker.style.top = y + rect.top +  "px";
+
+                document.querySelector('.map-container').appendChild(pointMarker);
+
+                // socket.emit('pointSelected', { x, y });
+            });
+
+            emitButton.addEventListener('click', (event) => {
+                pointMarker = document.querySelector('.point-marker');
+                const rect = mapImage.getBoundingClientRect();
+                if(pointMarker) {   
+                    const x = parseInt(pointMarker.style.left) - Math.round(rect.left);
+                    const y = parseInt(pointMarker.style.top) - Math.round(rect.top);
+                    socket.emit('pointSelected', {x, y});
+                    // console.log(x, y);
+                    // socket.on('pathfindingRequest', (data) => {
+                    //     console.log(data)
+                    // })
+                }
+            })
+
+            emergencyButton.addEventListener('click', (event) => {
+                socket.emit('emergencyStop');
+            })
+
+            lidarButton.addEventListener('click', (event) => {
+                socket.emit('lidarModeInit');
+            })
+
+            manualButton.addEventListener('click', (data) => {
+                clickCounter++;
+                clickCounterIndex = clickCounter % 2;
+
+                let velocitySlider = document.getElementById('velocitySlider');
+                let velocityOutput = document.getElementById('velocityOutput');
+
+                const forwardButton = document.getElementById('forwardButton');
+                const backwardButton = document.getElementById('backwardButton');
+                
+                velocityOutput.innerHTML = velocitySlider.value;
+                velocitySlider.oninput = function() {
+                    velocityOutput.innerHTML = this.value;
+                }
+
+                let buttonTexts = ["Manual Driving Mode", "Exit manual mode"];
+                let visibilityOptions = ['hidden', 'visible'];
+                
+                if(velocitySlider) {
+                    velocitySlider.style.visibility = visibilityOptions[clickCounterIndex];
+                    velocityOutput.style.visibility = visibilityOptions[clickCounterIndex];
+                    forwardButton.style.visibility = visibilityOptions[clickCounterIndex];
+                    backwardButton.style.visibility = visibilityOptions[clickCounterIndex];
+
+                    manualButton.innerHTML = buttonTexts[clickCounterIndex];
+                }
+            })
+        });
+    </script>
+</head>
+<body>
+    <div class="map-container">
+    <img id="mapImage" src="/map.png" alt="Map">
+    <img id="camImage" src="/cam-data.png" alt="Camera">
+    <div id="cursor"></div>
+    <div class="main-container">
+    <div class="button-container">
+        <button id="emitButton">Emit Message</button>
+        <button id="emergencyButton">Emergency Stop</button>
+        <button id="lidarButton">Lidar Mode</button>
+        <button id="manualButton">Manual Driving Mode</button>
+    </div>
+    <div class="slider-container">
+        <input type="range" min="1" max="50" value="25"  id="velocitySlider">
+        <div id="velocityOutput"></div>
+        <button id="forwardButton">Forward</button>
+        <button id="backwardButton">Backward</button>
+    </div>
+    </div>
+    </div>
+</body>
+</html>
