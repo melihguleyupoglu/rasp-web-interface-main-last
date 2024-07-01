@@ -34,6 +34,10 @@ def manualAccelerator(sid, data):
     direction, velocity = data['direction'], data['velocity']
     print(direction, velocity)
 
+@sio.event
+def resetRequest(sid):
+    print("Reset request received.")
+
 if __name__ == "__main__":
     print("Starting Python server on port 8080") 
     eventlet.wsgi.server(eventlet.listen(("localhost", 8080)), app)

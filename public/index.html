@@ -18,6 +18,7 @@
             const manualButton = document.getElementById('manualButton');
             const forwardButton = document.getElementById('forwardButton');
             const backwardButton = document.getElementById('backwardButton');
+            const resetButton = document.getElementById('resetButton');
 
             mapImage.onload = function() {
                 cursor.style.visibility = 'visible';
@@ -122,6 +123,10 @@
                 let velocityOutput = document.getElementById('velocityOutput');
                 socket.emit('manualAccelerator', {"direction": "backward", "velocity": velocityOutput.innerHTML});
             });
+
+            resetButton.addEventListener('click', (data) => {
+                socket.emit('resetRequest');
+            })
         });
     </script>
 </head>
@@ -136,6 +141,7 @@
         <button id="emergencyButton">Emergency Stop</button>
         <button id="lidarButton">Lidar Mode</button>
         <button id="manualButton">Manual Driving Mode</button>
+        <button id="resetButton">Reset</button>
     </div>
     <div class="slider-container">
         <input type="range" min="1" max="50" value="25"  id="velocitySlider">
