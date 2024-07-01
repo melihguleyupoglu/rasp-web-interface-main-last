@@ -16,6 +16,12 @@
             const emergencyButton = document.getElementById('emergencyButton');
             const lidarButton = document.getElementById('lidarButton');
             const manualButton = document.getElementById('manualButton');
+            const forwardButton = document.getElementById('forwardButton');
+            const backwardButton = document.getElementById('backwardButton');
+
+            mapImage.onload = function() {
+                cursor.style.visibility = 'visible';
+            }
             
             
             mapImage.addEventListener('mousemove', (event) => {
@@ -76,6 +82,10 @@
                 clickCounter++;
                 clickCounterIndex = clickCounter % 2;
 
+                if(clickCounterIndex == 1) {
+                    socket.emit('manualModeInit');
+                }
+
                 let velocitySlider = document.getElementById('velocitySlider');
                 let velocityOutput = document.getElementById('velocityOutput');
 
@@ -89,6 +99,8 @@
 
                 let buttonTexts = ["Manual Driving Mode", "Exit manual mode"];
                 let visibilityOptions = ['hidden', 'visible'];
+
+                
                 
                 if(velocitySlider) {
                     velocitySlider.style.visibility = visibilityOptions[clickCounterIndex];
@@ -99,13 +111,24 @@
                     manualButton.innerHTML = buttonTexts[clickCounterIndex];
                 }
             })
+            forwardButton.addEventListener('click', (data) => {
+                console.log('forward');
+                let velocityOutput = document.getElementById('velocityOutput');
+                socket.emit('manualAccelerator', {"direction": "forward", "velocity": velocityOutput.innerHTML});
+            });
+
+            backwardButton.addEventListener('click', (data) => {
+                console.log('backward');
+                let velocityOutput = document.getElementById('velocityOutput');
+                socket.emit('manualAccelerator', {"direction": "backward", "velocity": velocityOutput.innerHTML});
+            });
         });
     </script>
 </head>
 <body>
     <div class="map-container">
-    <img id="mapImage" src="/map.png" alt="Map">
-    <img id="camImage" src="/cam-data.png" alt="Camera">
+    <img id="mapImage" src="/map.png" alt="There is no map right now. Please use lidar mode.">
+    <img id="camImage" src="/cam-data.png" alt="Camera is not working at the moment. It'll when car starts driving.">
     <div id="cursor"></div>
     <div class="main-container">
     <div class="button-container">

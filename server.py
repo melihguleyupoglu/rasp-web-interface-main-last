@@ -25,6 +25,15 @@ def emergencyStop(sid):
 def lidarModeInit(sid):
     print("Lidar mode request received.")
 
+@sio.event
+def manualModeInit(sid):
+    print("Manual mode initiated.")
+
+@sio.event
+def manualAccelerator(sid, data):
+    direction, velocity = data['direction'], data['velocity']
+    print(direction, velocity)
+
 if __name__ == "__main__":
     print("Starting Python server on port 8080") 
     eventlet.wsgi.server(eventlet.listen(("localhost", 8080)), app)
