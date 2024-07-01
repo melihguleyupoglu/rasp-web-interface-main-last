@@ -24,13 +24,13 @@ const io = new Server(server, {
 
 app.use(express.static('public'));
 
-// io.on('connection', (socket) => {
-//     console.log('A client connected');
-//     socket.on('pointSelected', (data) => {
-//         const { x, y } = data;
-//         console.log('Received pointSelected:', x, y);
-//     });
-// });
+io.on('connection', (socket) => {
+    console.log('A client connected');
+    socket.on('invalidPath', (data) => {
+        // const { x, y } = data;
+        console.log('Invalid path');
+    });
+});
 
 server.listen(3000, () => {
     console.log('Server is running on port 3000');

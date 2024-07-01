@@ -69,6 +69,9 @@
                     //     console.log(data)
                     // })
                 }
+                else {
+                    alert("Please select a location on map")
+                }
             })
 
             emergencyButton.addEventListener('click', (event) => {
@@ -137,7 +140,7 @@
     <div id="cursor"></div>
     <div class="main-container">
     <div class="button-container">
-        <button id="emitButton">Emit Message</button>
+        <button id="emitButton">Autonomous drive</button>
         <button id="emergencyButton">Emergency Stop</button>
         <button id="lidarButton">Lidar Mode</button>
         <button id="manualButton">Manual Driving Mode</button>
